@@ -17,6 +17,10 @@ const ESP32_CAM_URL = "http://192.168.10.120";
 app.use(cors());
 app.use(express.json()); // For parsing JSON bodies
 
+app.get("/", (req, res) => {
+  res.send("Hello from the server!");
+});
+
 app.use(
   "/camera",
   createProxyMiddleware({
