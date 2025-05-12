@@ -1,41 +1,30 @@
+// Example using in-memory array
 const express = require("express");
-const http = require("http");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const { Server } = require("socket.io");
+const app = express();
 const cors = require("cors");
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
-
-const ESP32_CAM_URL = "http://192.168.10.120";
-
 app.use(cors());
-app.use(express.json()); // For parsing JSON bodies
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello from the server!");
-});
+let requestLog = []; // ✅ Store combined requests
 
-app.use(
-  "/camera",
-  createProxyMiddleware({
-    target: ESP32_CAM_URL,
-    changeOrigin: true,
-  })
-);
-
+// 👤 React Native app or C client will send this
 app.post("/sensorTrigger", (req, res) => {
-  const { status } = req.body;
-  if (status === "motion") {
-    io.emit("alarmTriggered", { message: "🚨 Motion detected!" });
-  }
-  res.send({ success: true });
+  const { source, status, time } = req.body;
+
+  requestLog.push({ source, status, time: time || new Date().toISOString() });
+
+  res.json({ success: true });
 });
 
-// Start server
+// ✅ React Native app will fetch this to display
+app.get("/sensorLog", (req, res) => {
+  res.json(requestLog);
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 module.exports = app;
