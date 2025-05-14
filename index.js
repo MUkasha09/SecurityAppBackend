@@ -24,21 +24,21 @@ app.get("/sensorLog", (req, res) => {
   res.json(requestLog);
 });
 
-app.post("/alarmStatus", async (req, res) => {
-  const { status } = req.body;
+// app.post("/alarmStatus", async (req, res) => {
+//   const { status } = req.body;
 
-  try {
-    const deviceUrl = "http://YOUR_DEVICE_IP:PORT/trigger";
-    await axios.post(deviceUrl, { status });
+//   try {
+//     const deviceUrl = "http://YOUR_DEVICE_IP:PORT/trigger";
+//     await axios.post(deviceUrl, { status });
 
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error forwarding to hardware device:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to contact hardware device" });
-  }
-});
+//     res.json({ success: true });
+//   } catch (error) {
+//     console.error("Error forwarding to hardware device:", error);
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Failed to contact hardware device" });
+//   }
+// });
 
 app.post("/alarmTrigger", (req, res) => {
   const { status } = req.body;
@@ -58,5 +58,3 @@ app.post("/alarmTrigger", (req, res) => {
 app.get("/alarmTrigger", (req, res) => {
   res.json({ success: true, status: currentAlarmStatus });
 });
-
-module.exports = app;
